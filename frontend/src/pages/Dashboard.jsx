@@ -1,0 +1,424 @@
+import React from "react";
+
+const Dashboard = () => {
+  return (
+    <div className="font-display bg-background-light dark:bg-background-dark text-[#2C3E50] dark:text-slate-200">
+      <div className="flex min-h-screen">
+        {/* Sidebar */}
+        <aside className="w-64 flex-shrink-0 bg-white dark:bg-[#192734] p-4 flex flex-col justify-between border-r border-slate-200 dark:border-slate-800">
+          <div className="flex flex-col gap-8">
+            {/* Logo */}
+            <div className="flex gap-3 items-center px-3 pt-2">
+              <div
+                className="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
+                data-alt="JobFlow company logo with abstract blue shapes"
+                style={{
+                  backgroundImage:
+                    'url("https://lh3.googleusercontent.com/aida-public/AB6AXuBtYQI8gW78ylz8ArRG5XennyKnppU6KNPnZDt9wAcy6IVkNbnhgIuO84XYMUHhFOgggGJn43F2j1A1Z14BJRA4twZYbZdU58CSMg4y6OjoVnqyETqBRtOW2J0bxMshZ2C8IgEhDkjsvHR8_HcTTEfH-FoE-J_6LXkUy0dmapRfgxXFDZqCtyld-USiB0FG0hgpErO7942HyaFIqIp4DDx1CRx-Ya-NBW5m6B5y_Izc6675jOQSBv963SAYIiz00JqpsvcQmsfxN8mr")',
+                }}
+              />
+              <div className="flex flex-col">
+                <h1 className="text-slate-900 dark:text-white text-base font-bold leading-normal">
+                  JobFlow
+                </h1>
+                <p className="text-[#8A94A6] dark:text-slate-400 text-sm font-normal leading-normal">
+                  Application Tracker
+                </p>
+              </div>
+            </div>
+
+            {/* Nav */}
+            <nav className="flex flex-col gap-2">
+              <a
+                href="#"
+                className="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary/10 text-primary dark:bg-primary/20"
+              >
+                <span className="material-symbols-outlined fill">dashboard</span>
+                <p className="text-sm font-medium leading-normal">Dashboard</p>
+              </a>
+
+              <a
+                href="#"
+                className="flex items-center gap-3 px-3 py-2 text-[#8A94A6] hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
+              >
+                <span className="material-symbols-outlined">view_kanban</span>
+                <p className="text-sm font-medium leading-normal">
+                  Kanban Board
+                </p>
+              </a>
+
+              <a
+                href="#"
+                className="flex items-center gap-3 px-3 py-2 text-[#8A94A6] hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
+              >
+                <span className="material-symbols-outlined">description</span>
+                <p className="text-sm font-medium leading-normal">Resumes</p>
+              </a>
+
+              <a
+                href="#"
+                className="flex items-center gap-3 px-3 py-2 text-[#8A94A6] hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
+              >
+                <span className="material-symbols-outlined">bar_chart</span>
+                <p className="text-sm font-medium leading-normal">Analytics</p>
+              </a>
+
+              <a
+                href="#"
+                className="flex items-center gap-3 px-3 py-2 text-[#8A94A6] hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
+              >
+                <span className="material-symbols-outlined">settings</span>
+                <p className="text-sm font-medium leading-normal">Settings</p>
+              </a>
+            </nav>
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <a
+              href="#"
+              className="flex items-center gap-3 px-3 py-2 text-[#8A94A6] hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
+            >
+              <span className="material-symbols-outlined">logout</span>
+              <p className="text-sm font-medium leading-normal">Logout</p>
+            </a>
+          </div>
+        </aside>
+
+        {/* Main area */}
+        <main className="flex-1 flex flex-col">
+          {/* Header */}
+          <header className="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 px-10 py-3 bg-white dark:bg-[#192734]">
+            <div className="flex items-center gap-8 flex-1">
+              <h2 className="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">
+                Welcome back, Alex!
+              </h2>
+              <a
+                href="#"
+                className="text-primary text-sm font-medium hover:underline"
+              >
+                Application Portal
+              </a>
+            </div>
+
+            <div className="flex flex-1 justify-end items-center gap-4">
+              <button className="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-primary text-white gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-4 hover:opacity-90">
+                <span className="material-symbols-outlined fill text-lg">
+                  add
+                </span>
+                <span className="truncate">Add Application</span>
+              </button>
+
+              <button className="p-2 text-[#8A94A6] hover:text-slate-900 dark:hover:text-white">
+                <span className="material-symbols-outlined">notifications</span>
+              </button>
+
+              <div
+                className="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
+                data-alt="User avatar of Alex"
+                style={{
+                  backgroundImage:
+                    'url("https://lh3.googleusercontent.com/aida-public/AB6AXuBCBZ_qA9LkwvLEyrPilVfUmMrgAi7628j5_fOw8F0QWZMktetVk5iYHwYaqJyJ2IwYPvkU_9CmhZt8JSzdvPY6n_gEQIrCT0az0npzKTX-yqfO7LX87AXrA-ebxjC9SzVCkaln3eqC-wgDfj1xTMdl4tzUX1DBLiBd1-U17Ma0sO_Tx-v4tbOLu9GBMJf5eaEdDNQxQBhR3mggMeaPpUE6KVLGWr1AWW3HV_tYKTm3_HTiGt6l9bE8oH6m8dbm3gmzpkzmCnZAaVWU")',
+                }}
+              />
+            </div>
+          </header>
+
+          {/* Content */}
+          <div className="p-10 flex-1 overflow-y-auto">
+            <div className="flex flex-col gap-8">
+              {/* Summary cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+                {[
+                  { label: "Applied", value: 125 },
+                  { label: "Shortlisted", value: 42 },
+                  { label: "Interview", value: 15 },
+                  { label: "Offered", value: 3 },
+                  { label: "Rejected", value: 21 },
+                ].map((item) => (
+                  <div
+                    key={item.label}
+                    className="flex min-w-[158px] flex-1 flex-col gap-2 rounded-xl p-6 border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#192734]"
+                  >
+                    <p className="text-slate-500 dark:text-slate-400 text-base font-medium leading-normal">
+                      {item.label}
+                    </p>
+                    <p className="text-slate-900 dark:text-white tracking-light text-3xl font-bold leading-tight">
+                      {item.value}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Filters + table */}
+              <div className="flex flex-col gap-6">
+                {/* Filters */}
+                <div className="flex items-center gap-4">
+                  <div className="relative flex-1 max-w-sm">
+                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                      <span className="material-symbols-outlined text-[#8A94A6]">
+                        search
+                      </span>
+                    </div>
+                    <input
+                      id="search"
+                      type="search"
+                      placeholder="Search applications..."
+                      className="block w-full p-2.5 pl-10 text-sm text-slate-900 border border-slate-300 rounded-lg bg-white dark:bg-slate-800 dark:border-slate-700 dark:placeholder-slate-400 dark:text-white focus:ring-primary focus:border-primary"
+                    />
+                  </div>
+
+                  <div className="relative">
+                    <select
+                      defaultValue="All Status"
+                      className="form-select appearance-none block w-full p-2.5 pr-8 text-sm text-slate-900 border border-slate-300 rounded-lg bg-white dark:bg-slate-800 dark:border-slate-700 dark:placeholder-slate-400 dark:text-white focus:ring-primary focus:border-primary"
+                    >
+                      <option>All Status</option>
+                      <option>Applied</option>
+                      <option>Shortlisted</option>
+                      <option>Interview</option>
+                      <option>Offered</option>
+                      <option>Rejected</option>
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-[#8A94A6]">
+                      <span className="material-symbols-outlined text-base">
+                        expand_more
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="relative">
+                    <select
+                      defaultValue="All Platforms"
+                      className="form-select appearance-none block w-full p-2.5 pr-8 text-sm text-slate-900 border border-slate-300 rounded-lg bg-white dark:bg-slate-800 dark:border-slate-700 dark:placeholder-slate-400 dark:text-white focus:ring-primary focus:border-primary"
+                    >
+                      <option>All Platforms</option>
+                      <option>LinkedIn</option>
+                      <option>Indeed</option>
+                      <option>Company Website</option>
+                      <option>Referral</option>
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-[#8A94A6]">
+                      <span className="material-symbols-outlined text-base">
+                        expand_more
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Table */}
+                <div className="w-full overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#192734]">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-sm">
+                      <thead className="bg-slate-50 dark:bg-slate-800/50 text-[#8A94A6] dark:text-slate-400 uppercase tracking-wider font-medium">
+                        <tr>
+                          <th scope="col" className="px-6 py-3">
+                            Company
+                          </th>
+                          <th scope="col" className="px-6 py-3">
+                            Job Title
+                          </th>
+                          <th scope="col" className="px-6 py-3">
+                            Status
+                          </th>
+                          <th scope="col" className="px-6 py-3">
+                            Platform
+                          </th>
+                          <th scope="col" className="px-6 py-3">
+                            Applied Date
+                          </th>
+                          <th scope="col" className="px-6 py-3">
+                            <span className="sr-only">Actions</span>
+                          </th>
+                        </tr>
+                      </thead>
+
+                      <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
+                        {/* Row 1 */}
+                        <tr className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors duration-200">
+                          <td className="px-6 py-4 whitespace-nowrap text-slate-900 dark:text-white font-semibold">
+                            TechCorp
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-[#8A94A6] dark:text-slate-300">
+                            Frontend Developer
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300">
+                              Offered
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-[#8A94A6] dark:text-slate-300">
+                            LinkedIn
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-[#8A94A6] dark:text-slate-300">
+                            2023-10-26
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div className="flex items-center justify-end gap-4">
+                              <button className="text-[#8A94A6] hover:text-primary transition-colors duration-200">
+                                <span className="material-symbols-outlined text-xl">
+                                  edit
+                                </span>
+                              </button>
+                              <button className="text-[#8A94A6] hover:text-red-500 transition-colors duration-200">
+                                <span className="material-symbols-outlined text-xl">
+                                  delete
+                                </span>
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+
+                        {/* Row 2 */}
+                        <tr className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors duration-200">
+                          <td className="px-6 py-4 whitespace-nowrap text-slate-900 dark:text-white font-semibold">
+                            Innovate Inc.
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-[#8A94A6] dark:text-slate-300">
+                            UX/UI Designer
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300">
+                              Interview
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-[#8A94A6] dark:text-slate-300">
+                            Indeed
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-[#8A94A6] dark:text-slate-300">
+                            2023-10-24
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div className="flex items-center justify-end gap-4">
+                              <button className="text-[#8A94A6] hover:text-primary transition-colors duration-200">
+                                <span className="material-symbols-outlined text-xl">
+                                  edit
+                                </span>
+                              </button>
+                              <button className="text-[#8A94A6] hover:text-red-500 transition-colors duration-200">
+                                <span className="material-symbols-outlined text-xl">
+                                  delete
+                                </span>
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+
+                        {/* Row 3 */}
+                        <tr className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors duration-200">
+                          <td className="px-6 py-4 whitespace-nowrap text-slate-900 dark:text-white font-semibold">
+                            Data Solutions
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-[#8A94A6] dark:text-slate-300">
+                            Product Manager
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300">
+                              Shortlisted
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-[#8A94A6] dark:text-slate-300">
+                            Company Website
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-[#8A94A6] dark:text-slate-300">
+                            2023-10-22
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div className="flex items-center justify-end gap-4">
+                              <button className="text-[#8A94A6] hover:text-primary transition-colors duration-200">
+                                <span className="material-symbols-outlined text-xl">
+                                  edit
+                                </span>
+                              </button>
+                              <button className="text-[#8A94A6] hover:text-red-500 transition-colors duration-200">
+                                <span className="material-symbols-outlined text-xl">
+                                  delete
+                                </span>
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+
+                        {/* Row 4 */}
+                        <tr className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors duration-200">
+                          <td className="px-6 py-4 whitespace-nowrap text-slate-900 dark:text-white font-semibold">
+                            NextGen Systems
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-[#8A94A6] dark:text-slate-300">
+                            Full-Stack Engineer
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300">
+                              Rejected
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-[#8A94A6] dark:text-slate-300">
+                            Referral
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-[#8A94A6] dark:text-slate-300">
+                            2023-10-20
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div className="flex items-center justify-end gap-4">
+                              <button className="text-[#8A94A6] hover:text-primary transition-colors duration-200">
+                                <span className="material-symbols-outlined text-xl">
+                                  edit
+                                </span>
+                              </button>
+                              <button className="text-[#8A94A6] hover:text-red-500 transition-colors duration-200">
+                                <span className="material-symbols-outlined text-xl">
+                                  delete
+                                </span>
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+
+                        {/* Row 5 */}
+                        <tr className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors duration-200">
+                          <td className="px-6 py-4 whitespace-nowrap text-slate-900 dark:text-white font-semibold">
+                            Web Weavers
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-[#8A94A6] dark:text-slate-300">
+                            Backend Developer
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300">
+                              Applied
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-[#8A94A6] dark:text-slate-300">
+                            LinkedIn
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-[#8A94A6] dark:text-slate-300">
+                            2023-10-18
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div className="flex items-center justify-end gap-4">
+                              <button className="text-[#8A94A6] hover:text-primary transition-colors duration-200">
+                                <span className="material-symbols-outlined text-xl">
+                                  edit
+                                </span>
+                              </button>
+                              <button className="text-[#8A94A6] hover:text-red-500 transition-colors duration-200">
+                                <span className="material-symbols-outlined text-xl">
+                                  delete
+                                </span>
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                {/* end table */}
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  );
+};
+
+export default Dashboard;

@@ -268,7 +268,7 @@ export default function Login() {
 
         {/* RIGHT: Illustration */}
         <div className="hidden md:flex items-center justify-center">
-          <div className="bg-[#e3f1f1] rounded-3xl rounded-tl-none rounded-bl-none shadow-[0_24px_70px_rgba(15,23,42,0.18)] overflow-hidden w-full h-[360px] md:h-[550px] flex items-center justify-center">
+          <div className="bg-[#e3f1f1] rounded-3xl rounded-tl-none rounded-bl-none shadow-[0_24px_60px_rgba(15,23,42,0.12)] overflow-hidden w-full h-[360px] md:h-[550px] flex items-center justify-center">
             <img
               src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxdNgwj67hXTdUePpjR6swDP7THCYPp2_1SAps8l9LHqoa0UifJfk3bICI8ZAc8XGmWUl782sYrQNS70kO99u13eGMQyBvnGZEN9Gl4FeFNRVhm2mZ5jLxmJaK8KYSsKmUNXR7wGHgJ-QUxl8wCuQJPiBq2Bw6zoWKg3mqYWrlIzal33HI0wwzK877o5EgUO-3aIOOYD2frAbXKoAqkkH9G_z2C9Tzafz0YTY7yE38jt0zZ33FIWDlxZcwVaAkluHY5XURhnu53wnK"
               alt="JobFlow calendar illustration"
