@@ -1,11 +1,140 @@
-import React from "react";
+import React, { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 
+const userApplicationDetails = [
+  {
+    uniqueNo: 1,
+    company: "TATA",
+    jobTitle: "Software Engineer",
+    status: "Applied",
+    platform: "LinkedIn",
+    appliedDate: "11/01/12",
+  },
+  {
+    uniqueNo: 2,
+    company: "UST Global",
+    jobTitle: "Fullstack Developer",
+    status: "Shortlisted",
+    platform: "Company Website",
+    appliedDate: "21/11/12",
+  },
+  {
+    uniqueNo: 3,
+    company: "Infosys",
+    jobTitle: "Web Developer",
+    status: "Offered",
+    platform: "LinkedIn",
+    appliedDate: "11/01/12",
+  },
+  {
+    uniqueNo: 4,
+    company: "TATA",
+    jobTitle: "Software Engineer",
+    status: "Interview",
+    platform: "LinkedIn",
+    appliedDate: "11/01/12",
+  },
+  {
+    uniqueNo: 5,
+    company: "TATA",
+    jobTitle: "Software Engineer",
+    status: "Rejected",
+    platform: "LinkedIn",
+    appliedDate: "11/01/12",
+  },
+  {
+    uniqueNo: 5,
+    company: "TATA",
+    jobTitle: "Software Engineer",
+    status: "Rejected",
+    platform: "LinkedIn",
+    appliedDate: "11/01/12",
+  },
+  {
+    uniqueNo: 1,
+    company: "TATA",
+    jobTitle: "Software Engineer",
+    status: "Applied",
+    platform: "LinkedIn",
+    appliedDate: "11/01/12",
+  },
+  {
+    uniqueNo: 2,
+    company: "UST Global",
+    jobTitle: "Fullstack Developer",
+    status: "Shortlisted",
+    platform: "Company Website",
+    appliedDate: "21/11/12",
+  },
+  {
+    uniqueNo: 3,
+    company: "Infosys",
+    jobTitle: "Web Developer",
+    status: "Offered",
+    platform: "LinkedIn",
+    appliedDate: "11/01/12",
+  },
+  {
+    uniqueNo: 4,
+    company: "TATA",
+    jobTitle: "Software Engineer",
+    status: "Interview",
+    platform: "LinkedIn",
+    appliedDate: "11/01/12",
+  },
+  {
+    uniqueNo: 5,
+    company: "TATA",
+    jobTitle: "Software Engineer",
+    status: "Rejected",
+    platform: "LinkedIn",
+    appliedDate: "11/01/12",
+  },
+  {
+    uniqueNo: 5,
+    company: "TATA",
+    jobTitle: "Software Engineer",
+    status: "Rejected",
+    platform: "LinkedIn",
+    appliedDate: "11/01/12",
+  },
+];
+const getStatusBadgeStyle = (status) => {
+  switch (status) {
+    case "Applied":
+      return "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300";
+    case "Shortlisted":
+      return "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300";
+    case "Interview":
+      return "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300";
+    case "Offered":
+      return "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300";
+    case "Rejected":
+      return "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300";
+    case "Referral":
+      return "bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300";
+    default:
+      return "bg-slate-100 text-slate-700 dark:bg-slate-900/40 dark:text-slate-300";
+  }
+};
 const Dashboard = () => {
+  const [applicationState, setApplicationState] = useState([
+    { label: "Applied", value: 0 },
+    { label: "Shortlisted", value: 0 },
+    { label: "Interview", value: 0 },
+    { label: "Offered", value: 0 },
+    { label: "Rejected", value: 0 },
+  ]);
+  const [applicationDetails, setApplicationDetails] = useState(
+    userApplicationDetails
+  );
   return (
     <div className="font-display bg-background-light dark:bg-background-dark text-[#2C3E50] dark:text-slate-200">
       <div className="flex min-h-screen">
         {/* Sidebar */}
-        <aside className="w-64 flex-shrink-0 bg-white dark:bg-[#192734] p-4 flex flex-col justify-between border-r border-slate-200 dark:border-slate-800">
+        <aside className="w-64 flex-shrink-0 bg-white dark:bg-[#192734] p-4 flex flex-col justify-between border-r border-slate-200 dark:border-slate-800 fixed top-0 left-0 h-full w-64 inset-y-0">
           <div className="flex flex-col gap-8">
             {/* Logo */}
             <div className="flex gap-3 items-center px-3 pt-2">
@@ -33,7 +162,9 @@ const Dashboard = () => {
                 href="#"
                 className="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary/10 text-primary dark:bg-primary/20"
               >
-                <span className="material-symbols-outlined fill">dashboard</span>
+                <span className="material-symbols-outlined fill">
+                  dashboard
+                </span>
                 <p className="text-sm font-medium leading-normal">Dashboard</p>
               </a>
 
@@ -85,7 +216,7 @@ const Dashboard = () => {
         </aside>
 
         {/* Main area */}
-        <main className="flex-1 flex flex-col">
+        <main className="flex-1 flex flex-col ml-64">
           {/* Header */}
           <header className="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 px-10 py-3 bg-white dark:bg-[#192734]">
             <div className="flex items-center gap-8 flex-1">
@@ -128,13 +259,7 @@ const Dashboard = () => {
             <div className="flex flex-col gap-8">
               {/* Summary cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
-                {[
-                  { label: "Applied", value: 125 },
-                  { label: "Shortlisted", value: 42 },
-                  { label: "Interview", value: 15 },
-                  { label: "Offered", value: 3 },
-                  { label: "Rejected", value: 21 },
-                ].map((item) => (
+                {applicationState.map((item) => (
                   <div
                     key={item.label}
                     className="flex min-w-[158px] flex-1 flex-col gap-2 rounded-xl p-6 border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#192734]"
@@ -209,6 +334,7 @@ const Dashboard = () => {
                 <div className="w-full overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#192734]">
                   <div className="overflow-x-auto">
                     <table className="w-full text-left text-sm">
+                      {/* tableHead */}
                       <thead className="bg-slate-50 dark:bg-slate-800/50 text-[#8A94A6] dark:text-slate-400 uppercase tracking-wider font-medium">
                         <tr>
                           <th scope="col" className="px-6 py-3">
@@ -231,182 +357,43 @@ const Dashboard = () => {
                           </th>
                         </tr>
                       </thead>
-
+                      {/* tableBody */}
                       <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
-                        {/* Row 1 */}
-                        <tr className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors duration-200">
-                          <td className="px-6 py-4 whitespace-nowrap text-slate-900 dark:text-white font-semibold">
-                            TechCorp
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-[#8A94A6] dark:text-slate-300">
-                            Frontend Developer
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300">
-                              Offered
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-[#8A94A6] dark:text-slate-300">
-                            LinkedIn
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-[#8A94A6] dark:text-slate-300">
-                            2023-10-26
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <div className="flex items-center justify-end gap-4">
-                              <button className="text-[#8A94A6] hover:text-primary transition-colors duration-200">
-                                <span className="material-symbols-outlined text-xl">
-                                  edit
-                                </span>
+                        {applicationDetails.map((item, index) => (
+                          <tr
+                            key={index}
+                            className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors duration-200"
+                          >
+                            <td className="px-6 py-4 whitespace-nowrap text-slate-900 dark:text-white font-semibold">
+                              {item.company}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-slate-900 dark:text-white font-semibold">
+                              {item.jobTitle}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-slate-900 dark:text-white font-semibold">
+                              <span
+                                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-center ${getStatusBadgeStyle(item.status)}`}
+                              >
+                                {item.status}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-slate-900 dark:text-white font-semibold">
+                              {item.platform}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-slate-900 dark:text-white font-semibold">
+                              {item.appliedDate}
+                            </td>
+                            {/* ACTIONS COLUMN */}
+                            <td className="px-6 py-4 text-center flex justify-around items-center">
+                              <button className="text-[#8A94A6] hover:text-primary-500 transition-colors duration-200 mr-2">
+                                <FontAwesomeIcon icon={faPenToSquare} />
                               </button>
                               <button className="text-[#8A94A6] hover:text-red-500 transition-colors duration-200">
-                                <span className="material-symbols-outlined text-xl">
-                                  delete
-                                </span>
+                                <FontAwesomeIcon icon={faTrashCan} />
                               </button>
-                            </div>
-                          </td>
-                        </tr>
-
-                        {/* Row 2 */}
-                        <tr className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors duration-200">
-                          <td className="px-6 py-4 whitespace-nowrap text-slate-900 dark:text-white font-semibold">
-                            Innovate Inc.
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-[#8A94A6] dark:text-slate-300">
-                            UX/UI Designer
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300">
-                              Interview
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-[#8A94A6] dark:text-slate-300">
-                            Indeed
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-[#8A94A6] dark:text-slate-300">
-                            2023-10-24
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <div className="flex items-center justify-end gap-4">
-                              <button className="text-[#8A94A6] hover:text-primary transition-colors duration-200">
-                                <span className="material-symbols-outlined text-xl">
-                                  edit
-                                </span>
-                              </button>
-                              <button className="text-[#8A94A6] hover:text-red-500 transition-colors duration-200">
-                                <span className="material-symbols-outlined text-xl">
-                                  delete
-                                </span>
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-
-                        {/* Row 3 */}
-                        <tr className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors duration-200">
-                          <td className="px-6 py-4 whitespace-nowrap text-slate-900 dark:text-white font-semibold">
-                            Data Solutions
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-[#8A94A6] dark:text-slate-300">
-                            Product Manager
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300">
-                              Shortlisted
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-[#8A94A6] dark:text-slate-300">
-                            Company Website
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-[#8A94A6] dark:text-slate-300">
-                            2023-10-22
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <div className="flex items-center justify-end gap-4">
-                              <button className="text-[#8A94A6] hover:text-primary transition-colors duration-200">
-                                <span className="material-symbols-outlined text-xl">
-                                  edit
-                                </span>
-                              </button>
-                              <button className="text-[#8A94A6] hover:text-red-500 transition-colors duration-200">
-                                <span className="material-symbols-outlined text-xl">
-                                  delete
-                                </span>
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-
-                        {/* Row 4 */}
-                        <tr className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors duration-200">
-                          <td className="px-6 py-4 whitespace-nowrap text-slate-900 dark:text-white font-semibold">
-                            NextGen Systems
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-[#8A94A6] dark:text-slate-300">
-                            Full-Stack Engineer
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300">
-                              Rejected
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-[#8A94A6] dark:text-slate-300">
-                            Referral
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-[#8A94A6] dark:text-slate-300">
-                            2023-10-20
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <div className="flex items-center justify-end gap-4">
-                              <button className="text-[#8A94A6] hover:text-primary transition-colors duration-200">
-                                <span className="material-symbols-outlined text-xl">
-                                  edit
-                                </span>
-                              </button>
-                              <button className="text-[#8A94A6] hover:text-red-500 transition-colors duration-200">
-                                <span className="material-symbols-outlined text-xl">
-                                  delete
-                                </span>
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-
-                        {/* Row 5 */}
-                        <tr className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors duration-200">
-                          <td className="px-6 py-4 whitespace-nowrap text-slate-900 dark:text-white font-semibold">
-                            Web Weavers
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-[#8A94A6] dark:text-slate-300">
-                            Backend Developer
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300">
-                              Applied
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-[#8A94A6] dark:text-slate-300">
-                            LinkedIn
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-[#8A94A6] dark:text-slate-300">
-                            2023-10-18
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <div className="flex items-center justify-end gap-4">
-                              <button className="text-[#8A94A6] hover:text-primary transition-colors duration-200">
-                                <span className="material-symbols-outlined text-xl">
-                                  edit
-                                </span>
-                              </button>
-                              <button className="text-[#8A94A6] hover:text-red-500 transition-colors duration-200">
-                                <span className="material-symbols-outlined text-xl">
-                                  delete
-                                </span>
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
+                            </td>
+                          </tr>
+                        ))}
                       </tbody>
                     </table>
                   </div>
