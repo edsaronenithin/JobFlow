@@ -1,11 +1,15 @@
-import React, { useState, useMemo } from "react";
+// src/pages/Dashboard.jsx
+import React, { useState, useMemo, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import StatusCard from "../components/StatusCard";
 import ApplicationTable from "../components/ApplicationTable";
 import ApplicationModal from "../components/ApplicationModal";
 
-// sample data
+// storage key used app-wide
+const STORAGE_KEY = "jobflow_applications";
+
+// sample data (used only when localStorage empty)
 const userApplicationDetails = [
   { uniqueNo: 1, company: "TATA", jobTitle: "Software Engineer", status: "Applied", platform: "LinkedIn", appliedDate: "11/01/12" },
   { uniqueNo: 2, company: "UST Global", jobTitle: "Fullstack Developer", status: "Shortlisted", platform: "Company Website", appliedDate: "21/11/12" },
@@ -14,12 +18,60 @@ const userApplicationDetails = [
   { uniqueNo: 5, company: "TATA", jobTitle: "Software Engineer", status: "Rejected", platform: "LinkedIn", appliedDate: "11/01/12" },
 ];
 
-const Dashboard = () => {
-  const [applicationDetails, setApplicationDetails] = useState(userApplicationDetails);
+function readFromStorage() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) {
+    console.warn("Failed read from storage", e);
+    return null;
+  }
+}
+
+export default function Dashboard() {
+  const stored = readFromStorage();
+  const [applicationDetails, setApplicationDetails] = useState(stored ?? userApplicationDetails);
 
   // modal state
   const [modalOpen, setModalOpen] = useState(false);
   const [editingApplication, setEditingApplication] = useState(null);
+
+  // write to storage whenever list changes
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(applicationDetails));
+    } catch (e) {
+      console.warn("Failed to write applications to storage", e);
+    }
+  }, [applicationDetails]);
+
+  // listen for updates from Details page (or other tabs)
+  useEffect(() => {
+    const handler = (e) => {
+      if (e?.detail?.applications) {
+        setApplicationDetails(e.detail.applications);
+      } else if (e?.detail?.action === "reload") {
+        // fallback: read from storage
+        const latest = readFromStorage();
+        if (latest) setApplicationDetails(latest);
+      }
+    };
+    window.addEventListener("applicationsUpdated", handler);
+    // also listen to storage events from other browser tabs
+    const onStorage = (ev) => {
+      if (ev.key === STORAGE_KEY) {
+        try {
+          const parsed = JSON.parse(ev.newValue || "[]");
+          setApplicationDetails(parsed);
+        } catch {}
+      }
+    };
+    window.addEventListener("storage", onStorage);
+    return () => {
+      window.removeEventListener("applicationsUpdated", handler);
+      window.removeEventListener("storage", onStorage);
+    };
+  }, []);
 
   // compute counts (memoized)
   const applicationState = useMemo(() => {
@@ -49,17 +101,24 @@ const Dashboard = () => {
   };
 
   const handleDelete = (item) => {
-    setApplicationDetails((prev) => prev.filter((a) => a.uniqueNo !== item.uniqueNo));
+    const updated = applicationDetails.filter((a) => a.uniqueNo !== item.uniqueNo);
+    setApplicationDetails(updated);
+    // broadcast the change for other pages/components
+    window.dispatchEvent(new CustomEvent("applicationsUpdated", { detail: { applications: updated } }));
   };
 
   // save (add or update)
   const handleSaveApplication = (updated) => {
+    let newList;
     if (updated.uniqueNo) {
-      setApplicationDetails((prev) => prev.map((p) => (p.uniqueNo === updated.uniqueNo ? { ...p, ...updated } : p)));
+      newList = applicationDetails.map((p) => (p.uniqueNo === updated.uniqueNo ? { ...p, ...updated } : p));
     } else {
       const nextId = Math.max(0, ...applicationDetails.map((a) => a.uniqueNo || 0)) + 1;
-      setApplicationDetails((prev) => [...prev, { ...updated, uniqueNo: nextId }]);
+      newList = [...applicationDetails, { ...updated, uniqueNo: nextId }];
     }
+    setApplicationDetails(newList);
+    // notify other pages
+    window.dispatchEvent(new CustomEvent("applicationsUpdated", { detail: { applications: newList } }));
     setModalOpen(false);
     setEditingApplication(null);
   };
@@ -85,8 +144,9 @@ const Dashboard = () => {
                 ))}
               </div>
 
-              {/* Filters (left as-is; you can make them controlled inputs later) */}
+              {/* Filters + Table */}
               <div className="flex flex-col gap-6">
+                {/* filters (left as-is) */}
                 <div className="flex items-center gap-4">
                   <div className="relative flex-1 max-w-sm">
                     <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -133,6 +193,4 @@ const Dashboard = () => {
       <ApplicationModal open={modalOpen} initialData={editingApplication} onClose={handleCloseModal} onSave={handleSaveApplication} />
     </div>
   );
-};
-
-export default Dashboard;
+}

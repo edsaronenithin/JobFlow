@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
@@ -22,7 +23,9 @@ const getStatusBadgeStyle = (status) => {
   }
 };
 
-const ApplicationTable = ({ applicationDetails, onEdit, onDelete }) => {
+const ApplicationTable = ({ applicationDetails = [], onEdit, onDelete }) => {
+  const navigate = useNavigate();
+
   return (
     <div className="w-full overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#192734]">
       <div className="overflow-x-auto">
@@ -42,46 +45,75 @@ const ApplicationTable = ({ applicationDetails, onEdit, onDelete }) => {
           <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
             {applicationDetails.map((item) => (
               <tr
-                key={item.uniqueNo ?? item.company + item.jobTitle}
+                key={item.uniqueNo ?? `${item.company}-${item.jobTitle}`}
                 className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors duration-200"
               >
+                {/* Company (clickable → details) */}
                 <td className="px-6 py-4 whitespace-nowrap text-slate-900 dark:text-white font-semibold">
-                  {item.company}
+                  <button
+                    type="button"
+                    onClick={() =>
+                      navigate(`/applications/${item.uniqueNo ?? ""}`, {
+                        state: { application: item },
+                      })
+                    }
+                    className="text-left hover:underline"
+                  >
+                    {item.company}
+                  </button>
                 </td>
+
                 <td className="px-6 py-4 whitespace-nowrap text-slate-900 dark:text-white font-semibold">
                   {item.jobTitle}
                 </td>
+
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span
-                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadgeStyle(item.status)}`}
+                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadgeStyle(
+                      item.status
+                    )}`}
                   >
                     {item.status}
                   </span>
                 </td>
+
                 <td className="px-6 py-4 whitespace-nowrap text-slate-900 dark:text-white font-semibold">
                   {item.platform}
                 </td>
+
                 <td className="px-6 py-4 whitespace-nowrap text-slate-900 dark:text-white font-semibold">
                   {item.appliedDate}
                 </td>
+
                 <td className="px-6 py-4 text-center flex justify-around items-center">
                   <button
-                    onClick={() => onEdit(item)}
+                    onClick={() => onEdit?.(item)}
                     className="text-[#8A94A6] hover:text-primary-500 transition-colors duration-200 mr-2"
                     title="Edit"
+                    aria-label={`Edit ${item.company} application`}
                   >
                     <FontAwesomeIcon icon={faPenToSquare} />
                   </button>
+
                   <button
-                    onClick={() => onDelete(item)}
+                    onClick={() => onDelete?.(item)}
                     className="text-[#8A94A6] hover:text-red-500 transition-colors duration-200"
                     title="Delete"
+                    aria-label={`Delete ${item.company} application`}
                   >
                     <FontAwesomeIcon icon={faTrashCan} />
                   </button>
                 </td>
               </tr>
             ))}
+
+            {applicationDetails.length === 0 && (
+              <tr>
+                <td colSpan={6} className="px-6 py-8 text-center text-sm text-slate-500">
+                  No applications found.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

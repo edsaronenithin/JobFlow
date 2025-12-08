@@ -39,10 +39,14 @@ const Sidebar = () => {
         <nav className="flex flex-col gap-2">
           <a
             href="#"
-            className="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary/10 text-primary dark:bg-primary/20"
+            className="sidebar-nav-link flex items-center gap-3 px-3 py-2 rounded-lg bg-primary/10 dark:bg-primary/20"
           >
-            <span className="material-symbols-outlined fill">dashboard</span>
-            <p className="text-sm font-medium">Dashboard</p>
+            <span className="material-symbols-outlined fill text-gray-600 dark:text-gray-300">
+              dashboard
+            </span>
+            <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
+              Dashboard
+            </p>
           </a>
 
           <a

@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
+import ApplicationDetails from "./pages/ApplicationDetails";
 import "./fontawesome";
 import { RequireAuth, RedirectIfAuth } from "./components/RouteGuards";
 
@@ -24,7 +25,15 @@ function App() {
           </RequireAuth>
         }
       />
-
+      {/* Application details (protected) */}
+     <Route
+       path="/applications/:id"
+       element={
+         <RequireAuth>
+           <ApplicationDetails />
+         </RequireAuth>
+       }
+/>
       {/* Auth pages — redirect away if already logged in */}
       <Route
         path="/login"
