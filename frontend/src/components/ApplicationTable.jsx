@@ -40,8 +40,11 @@ const ApplicationTable = ({ applicationDetails, onEdit, onDelete }) => {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
-            {applicationDetails.map((item, index) => (
-              <tr key={index} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors duration-200">
+            {applicationDetails.map((item) => (
+              <tr
+                key={item.uniqueNo ?? item.company + item.jobTitle}
+                className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors duration-200"
+              >
                 <td className="px-6 py-4 whitespace-nowrap text-slate-900 dark:text-white font-semibold">
                   {item.company}
                 </td>

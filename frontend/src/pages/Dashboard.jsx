@@ -3,19 +3,23 @@ import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import StatusCard from "../components/StatusCard";
 import ApplicationTable from "../components/ApplicationTable";
+import ApplicationModal from "../components/ApplicationModal";
 
-// sample data (moved from previous file)
+// sample data
 const userApplicationDetails = [
   { uniqueNo: 1, company: "TATA", jobTitle: "Software Engineer", status: "Applied", platform: "LinkedIn", appliedDate: "11/01/12" },
   { uniqueNo: 2, company: "UST Global", jobTitle: "Fullstack Developer", status: "Shortlisted", platform: "Company Website", appliedDate: "21/11/12" },
   { uniqueNo: 3, company: "Infosys", jobTitle: "Web Developer", status: "Offered", platform: "LinkedIn", appliedDate: "11/01/12" },
   { uniqueNo: 4, company: "TATA", jobTitle: "Software Engineer", status: "Interview", platform: "LinkedIn", appliedDate: "11/01/12" },
   { uniqueNo: 5, company: "TATA", jobTitle: "Software Engineer", status: "Rejected", platform: "LinkedIn", appliedDate: "11/01/12" },
-  // ... you can add more rows (watch uniqueNo duplication)
 ];
 
 const Dashboard = () => {
   const [applicationDetails, setApplicationDetails] = useState(userApplicationDetails);
+
+  // modal state
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editingApplication, setEditingApplication] = useState(null);
 
   // compute counts (memoized)
   const applicationState = useMemo(() => {
@@ -32,33 +36,37 @@ const Dashboard = () => {
     ];
   }, [applicationDetails]);
 
-  // simple handlers
+  // open modal for Add
   const handleAdd = () => {
-    // placeholder: open modal / navigate to Add form
-    // here we'll append a dummy entry for demo
-    const nextId = applicationDetails.length + 1;
-    setApplicationDetails([
-      ...applicationDetails,
-      {
-        uniqueNo: nextId,
-        company: "NewCo",
-        jobTitle: "New Role",
-        status: "Applied",
-        platform: "LinkedIn",
-        appliedDate: "05/12/25",
-      },
-    ]);
+    setEditingApplication(null);
+    setModalOpen(true);
   };
 
+  // open modal for edit
   const handleEdit = (item) => {
-    // placeholder: open edit modal — for demo we'll toggle status to 'Interview'
-    setApplicationDetails((prev) =>
-      prev.map((a) => (a.uniqueNo === item.uniqueNo ? { ...a, status: "Interview" } : a))
-    );
+    setEditingApplication(item);
+    setModalOpen(true);
   };
 
   const handleDelete = (item) => {
     setApplicationDetails((prev) => prev.filter((a) => a.uniqueNo !== item.uniqueNo));
+  };
+
+  // save (add or update)
+  const handleSaveApplication = (updated) => {
+    if (updated.uniqueNo) {
+      setApplicationDetails((prev) => prev.map((p) => (p.uniqueNo === updated.uniqueNo ? { ...p, ...updated } : p)));
+    } else {
+      const nextId = Math.max(0, ...applicationDetails.map((a) => a.uniqueNo || 0)) + 1;
+      setApplicationDetails((prev) => [...prev, { ...updated, uniqueNo: nextId }]);
+    }
+    setModalOpen(false);
+    setEditingApplication(null);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setEditingApplication(null);
   };
 
   return (
@@ -121,6 +129,8 @@ const Dashboard = () => {
           </div>
         </main>
       </div>
+
+      <ApplicationModal open={modalOpen} initialData={editingApplication} onClose={handleCloseModal} onSave={handleSaveApplication} />
     </div>
   );
 };
