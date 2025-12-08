@@ -1,22 +1,50 @@
+// src/App.jsx
 import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import "./fontawesome";
+import { RequireAuth, RedirectIfAuth } from "./components/RouteGuards";
 
 function App() {
   return (
     <Routes>
-      {/* Default route → Login */}
-      <Route path="/" element={<Dashboard />} />
-      {/* <Route path="/" element={<Navigate to="/login" />} /> */}
+      {/* Smart default: go to dashboard if logged in else to login */}
+      <Route
+        path="/"
+        element={<Navigate to="/dashboard" replace />}
+      />
 
-      {/* Auth pages */}
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
+      {/* Protected dashboard */}
+      <Route
+        path="/dashboard"
+        element={
+          <RequireAuth>
+            <Dashboard />
+          </RequireAuth>
+        }
+      />
 
-      {/* Fallback route */}
-      <Route path="*" element={<Navigate to="/login" />} />
+      {/* Auth pages — redirect away if already logged in */}
+      <Route
+        path="/login"
+        element={
+          <RedirectIfAuth>
+            <Login />
+          </RedirectIfAuth>
+        }
+      />
+      <Route
+        path="/register"
+        element={
+          <RedirectIfAuth>
+            <Register />
+          </RedirectIfAuth>
+        }
+      />
+
+      {/* Fallback: catch-all */}
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }
