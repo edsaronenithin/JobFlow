@@ -38,7 +38,7 @@ const Sidebar = () => {
         {/* Navigation links */}
         <nav className="flex flex-col gap-2">
           <a
-            href="#"
+            href="/dashboard"
             className="sidebar-nav-link flex items-center gap-3 px-3 py-2 rounded-lg bg-primary/10 dark:bg-primary/20"
           >
             <span className="material-symbols-outlined fill text-gray-600 dark:text-gray-300">
@@ -50,11 +50,11 @@ const Sidebar = () => {
           </a>
 
           <a
-            href="#"
+            href="/applications"
             className="flex items-center gap-3 px-3 py-2 text-[#8A94A6] hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
           >
             <span className="material-symbols-outlined">view_kanban</span>
-            <p className="text-sm font-medium">Kanban Board</p>
+            <p className="text-sm font-medium">Applications</p>
           </a>
 
           <a

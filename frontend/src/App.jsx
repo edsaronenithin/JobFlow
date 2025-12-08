@@ -4,6 +4,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import ApplicationDetails from "./pages/ApplicationDetails";
+import Applications from "./pages/Applications";
 import "./fontawesome";
 import { RequireAuth, RedirectIfAuth } from "./components/RouteGuards";
 
@@ -11,10 +12,7 @@ function App() {
   return (
     <Routes>
       {/* Smart default: go to dashboard if logged in else to login */}
-      <Route
-        path="/"
-        element={<Navigate to="/dashboard" replace />}
-      />
+      <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
       {/* Protected dashboard */}
       <Route
@@ -26,14 +24,22 @@ function App() {
         }
       />
       {/* Application details (protected) */}
-     <Route
-       path="/applications/:id"
-       element={
-         <RequireAuth>
-           <ApplicationDetails />
-         </RequireAuth>
-       }
-/>
+      <Route
+        path="/applications/:id"
+        element={
+          <RequireAuth>
+            <ApplicationDetails />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/applications"
+        element={
+          <RequireAuth>
+            <Applications />
+          </RequireAuth>
+        }
+      />
       {/* Auth pages — redirect away if already logged in */}
       <Route
         path="/login"
