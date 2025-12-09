@@ -7,6 +7,7 @@ import ApplicationDetails from "./pages/ApplicationDetails";
 import Applications from "./pages/Applications";
 import Analytics from "./pages/Analytics";
 import Settings from "./pages/Settings";
+import EmailIntegration from "./pages/EmailIntegration";
 import "./fontawesome";
 import { RequireAuth, RedirectIfAuth } from "./components/RouteGuards";
 
@@ -55,6 +56,14 @@ function App() {
   element={
     <RequireAuth>
       <Settings />
+    </RequireAuth>
+  }
+/>
+<Route
+  path="/settings/email"
+  element={
+    <RequireAuth>
+      <EmailIntegration />
     </RequireAuth>
   }
 />

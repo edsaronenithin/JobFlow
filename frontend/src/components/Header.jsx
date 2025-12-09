@@ -7,9 +7,9 @@ const Header = ({ onAdd }) => {
         <h2 className="text-slate-900 dark:text-white text-lg font-bold tracking-[-0.015em]">
           Welcome back, Alex!
         </h2>
-        <a href="#" className="text-primary text-sm font-medium hover:underline">
+        {/* <a href="../pages/Applications.jsx" className="text-primary text-sm font-medium hover:underline">
           Application Portal
-        </a>
+        </a> */}
       </div>
 
       <div className="flex flex-1 justify-end items-center gap-4">
