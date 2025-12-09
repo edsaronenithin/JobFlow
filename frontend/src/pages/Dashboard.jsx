@@ -1,5 +1,5 @@
 // src/pages/Dashboard.jsx
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import StatusCard from "../components/StatusCard";
@@ -36,7 +36,15 @@ export default function Dashboard() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingApplication, setEditingApplication] = useState(null);
 
-  // write to storage whenever list changes
+  // filters / search
+  const [searchText, setSearchText] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [platformFilter, setPlatformFilter] = useState("All");
+  const [filtersOpen, setFiltersOpen] = useState(false);
+
+  const filtersRef = useRef(null);
+
+  // persist apps to storage when changed
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(applicationDetails));
@@ -51,13 +59,12 @@ export default function Dashboard() {
       if (e?.detail?.applications) {
         setApplicationDetails(e.detail.applications);
       } else if (e?.detail?.action === "reload") {
-        // fallback: read from storage
         const latest = readFromStorage();
         if (latest) setApplicationDetails(latest);
       }
     };
     window.addEventListener("applicationsUpdated", handler);
-    // also listen to storage events from other browser tabs
+
     const onStorage = (ev) => {
       if (ev.key === STORAGE_KEY) {
         try {
@@ -67,13 +74,14 @@ export default function Dashboard() {
       }
     };
     window.addEventListener("storage", onStorage);
+
     return () => {
       window.removeEventListener("applicationsUpdated", handler);
       window.removeEventListener("storage", onStorage);
     };
   }, []);
 
-  // compute counts (memoized)
+  // compute counts (unfiltered)
   const applicationState = useMemo(() => {
     const counts = { Applied: 0, Shortlisted: 0, Interview: 0, Offered: 0, Rejected: 0 };
     applicationDetails.forEach((a) => {
@@ -87,6 +95,43 @@ export default function Dashboard() {
       { label: "Rejected", value: counts.Rejected },
     ];
   }, [applicationDetails]);
+
+  // derived set of platform options (for filter dropdown)
+  const platformOptions = useMemo(() => {
+    const s = new Set();
+    applicationDetails.forEach((a) => {
+      if (a.platform) s.add(a.platform);
+    });
+    return ["All", ...Array.from(s)];
+  }, [applicationDetails]);
+
+  // apply search + filters to produce the list shown in table and used for counts in cards if you want
+  const filteredApplications = useMemo(() => {
+    const q = (searchText || "").trim().toLowerCase();
+    return applicationDetails.filter((a) => {
+      if (statusFilter !== "All" && a.status !== statusFilter) return false;
+      if (platformFilter !== "All" && a.platform !== platformFilter) return false;
+      if (!q) return true;
+      // search in company, jobTitle, platform, notes
+      const hay = `${a.company || ""} ${a.jobTitle || ""} ${a.platform || ""} ${a.notes || ""}`.toLowerCase();
+      return hay.includes(q);
+    });
+  }, [applicationDetails, searchText, statusFilter, platformFilter]);
+
+  // If you prefer status cards reflect filtered result counts, compute separate counts:
+  const applicationStateFiltered = useMemo(() => {
+    const counts = { Applied: 0, Shortlisted: 0, Interview: 0, Offered: 0, Rejected: 0 };
+    filteredApplications.forEach((a) => {
+      if (counts[a.status] !== undefined) counts[a.status] += 1;
+    });
+    return [
+      { label: "Applied", value: counts.Applied },
+      { label: "Shortlisted", value: counts.Shortlisted },
+      { label: "Interview", value: counts.Interview },
+      { label: "Offered", value: counts.Offered },
+      { label: "Rejected", value: counts.Rejected },
+    ];
+  }, [filteredApplications]);
 
   // open modal for Add
   const handleAdd = () => {
@@ -128,8 +173,27 @@ export default function Dashboard() {
     setEditingApplication(null);
   };
 
+  // click outside to close filters dropdown
+  useEffect(() => {
+    function onDoc(e) {
+      if (!filtersRef.current) return;
+      if (!filtersRef.current.contains(e.target)) {
+        setFiltersOpen(false);
+      }
+    }
+    if (filtersOpen) document.addEventListener("mousedown", onDoc);
+    return () => document.removeEventListener("mousedown", onDoc);
+  }, [filtersOpen]);
+
+  // clear filters
+  const clearFilters = () => {
+    setSearchText("");
+    setStatusFilter("All");
+    setPlatformFilter("All");
+  };
+
   return (
-    <div className="font-display bg-background-light dark:bg-background-dark text-[#2C3E50] dark:text-slate-200">
+    <div className="font-display bg-background-light dark:bg-background-dark text-[#2C3E50] dark:text-slate-200 min-h-screen">
       <div className="flex min-h-screen">
         <Sidebar />
 
@@ -138,52 +202,129 @@ export default function Dashboard() {
 
           <div className="p-10 flex-1 overflow-y-auto">
             <div className="flex flex-col gap-8">
+              {/* KPI cards — show filtered counts so user sees effect of filters */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
-                {applicationState.map((item) => (
+                {applicationStateFiltered.map((item) => (
                   <StatusCard key={item.label} label={item.label} value={item.value} />
                 ))}
               </div>
 
-              {/* Filters + Table */}
-              <div className="flex flex-col gap-6">
-                {/* filters (left as-is) */}
+              {/* Top controls: Search + Filters button + Add */}
+              <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
-                  <div className="relative flex-1 max-w-sm">
+                  {/* Search */}
+                  <div className="relative">
                     <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                       <span className="material-symbols-outlined text-[#8A94A6]">search</span>
                     </div>
-                    <input id="search" type="search" placeholder="Search applications..." className="block w-full p-2.5 pl-10 text-sm text-slate-900 border border-slate-300 rounded-lg bg-white dark:bg-slate-800 dark:border-slate-700 dark:placeholder-slate-400 dark:text-white focus:ring-primary focus:border-primary" />
+                    <input
+                      value={searchText}
+                      onChange={(e) => setSearchText(e.target.value)}
+                      placeholder="Search applications..."
+                      className="w-80 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-500 px-10 py-2 focus:ring-primary focus:border-primary"
+                    />
                   </div>
 
-                  <div className="relative">
-                    <select defaultValue="All Status" className="form-select appearance-none block w-full p-2.5 pr-8 text-sm text-slate-900 border border-slate-300 rounded-lg bg-white dark:bg-slate-800 dark:border-slate-700 dark:placeholder-slate-400 dark:text-white focus:ring-primary focus:border-primary">
-                      <option>All Status</option>
-                      <option>Applied</option>
-                      <option>Shortlisted</option>
-                      <option>Interview</option>
-                      <option>Offered</option>
-                      <option>Rejected</option>
-                    </select>
-                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-[#8A94A6]">
-                      <span className="material-symbols-outlined text-base">expand_more</span>
-                    </div>
-                  </div>
+                  {/* Filters button */}
+                  <div className="relative" ref={filtersRef}>
+                    <button
+                      onClick={() => setFiltersOpen((s) => !s)}
+                      aria-expanded={filtersOpen}
+                      className="flex items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-700 dark:text-slate-200 px-3 py-2 hover:shadow"
+                      title="Open filters"
+                    >
+                      <span className="material-symbols-outlined">tune</span>
+                      Filters
+                    </button>
 
-                  <div className="relative">
-                    <select defaultValue="All Platforms" className="form-select appearance-none block w-full p-2.5 pr-8 text-sm text-slate-900 border border-slate-300 rounded-lg bg-white dark:bg-slate-800 dark:border-slate-700 dark:placeholder-slate-400 dark:text-white focus:ring-primary focus:border-primary">
-                      <option>All Platforms</option>
-                      <option>LinkedIn</option>
-                      <option>Indeed</option>
-                      <option>Company Website</option>
-                      <option>Referral</option>
-                    </select>
-                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-[#8A94A6]">
-                      <span className="material-symbols-outlined text-base">expand_more</span>
-                    </div>
+                    {/* Filters dropdown */}
+                    {filtersOpen && (
+                      <div className="absolute left-0 mt-2 w-80 z-50 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 shadow-lg">
+                        <div className="flex flex-col gap-3">
+                          <label className="flex flex-col text-sm">
+                            <span className="text-slate-900 dark:text-white text-xs font-medium">Status</span>
+                            <select
+                              value={statusFilter}
+                              onChange={(e) => setStatusFilter(e.target.value)}
+                              className="mt-1 block w-full rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-200 px-3 py-2"
+                            >
+                              <option>All</option>
+                              <option>Applied</option>
+                              <option>Shortlisted</option>
+                              <option>Interview</option>
+                              <option>Offered</option>
+                              <option>Rejected</option>
+                            </select>
+                          </label>
+
+                          <label className="flex flex-col text-sm">
+                            <span className="text-slate-900 dark:text-white text-xs font-medium">Platform</span>
+                            <select
+                              value={platformFilter}
+                              onChange={(e) => setPlatformFilter(e.target.value)}
+                              className="mt-1 block w-full rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-200 px-3 py-2"
+                            >
+                              {platformOptions.map((p) => (
+                                <option key={p} value={p}>{p}</option>
+                              ))}
+                            </select>
+                          </label>
+
+                          <div className="flex items-center justify-between gap-3 pt-1">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                clearFilters();
+                                setFiltersOpen(false);
+                              }}
+                              className="text-sm text-slate-600 dark:text-slate-300 px-3 py-2 hover:underline"
+                            >
+                              Clear
+                            </button>
+
+                            <div className="flex gap-2">
+                              <button
+                                type="button"
+                                onClick={() => setFiltersOpen(false)}
+                                className="px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-700 dark:text-slate-200"
+                              >
+                                Close
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setFiltersOpen(false)}
+                                className="px-3 py-2 rounded-lg bg-[#2b8cee] hover:bg-[#1f6fcc] text-white text-sm"
+                              >
+                                Apply
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
-                <ApplicationTable applicationDetails={applicationDetails} onEdit={handleEdit} onDelete={handleDelete} />
+                {/* Add Application button */}
+                <div>
+                  <button
+                    onClick={handleAdd}
+                    className="flex h-10 items-center justify-center gap-2 rounded-lg bg-[#2b8cee] hover:bg-[#1f6fcc] text-white text-sm font-bold px-4 transition-all"
+                    title="Add Application"
+                  >
+                    <span className="material-symbols-outlined text-lg">add</span>
+                    Add Application
+                  </button>
+                </div>
+              </div>
+
+              {/* Table */}
+              <div>
+                <ApplicationTable
+                  applicationDetails={filteredApplications}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
+                />
               </div>
             </div>
           </div>
