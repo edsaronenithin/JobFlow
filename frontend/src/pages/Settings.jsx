@@ -21,7 +21,9 @@ function readProfile() {
 function readEmailIntegration() {
   try {
     const raw = localStorage.getItem(EMAIL_INTEGRATION_KEY);
-    return raw ? JSON.parse(raw) : { connected: false, email: null, lastSynced: null, autoSync: false };
+    return raw
+      ? JSON.parse(raw)
+      : { connected: false, email: null, lastSynced: null, autoSync: false };
   } catch {
     return { connected: false, email: null, lastSynced: null, autoSync: false };
   }
@@ -45,7 +47,9 @@ export default function Settings() {
 
   // email integration simulated state (persisted to same key used in EmailIntegration page)
   const initialEmail = readEmailIntegration();
-  const [gmailConnected, setGmailConnected] = useState(initialEmail.connected ?? false);
+  const [gmailConnected, setGmailConnected] = useState(
+    initialEmail.connected ?? false
+  );
   const [gmailAddress, setGmailAddress] = useState(initialEmail.email ?? "");
 
   // effect: apply theme on mount + when dark changes
@@ -73,7 +77,9 @@ export default function Settings() {
 
   // change password (placeholder)
   const handleChangePassword = () => {
-    alert("Change password flow (placeholder). Implement your modal or redirect here.");
+    alert(
+      "Change password flow (placeholder). Implement your modal or redirect here."
+    );
   };
 
   // connect / disconnect gmail (simulated) and persist to same key EmailIntegration reads
@@ -81,13 +87,20 @@ export default function Settings() {
     try {
       localStorage.setItem(EMAIL_INTEGRATION_KEY, JSON.stringify(payload));
       // broadcast for other pages
-      window.dispatchEvent(new CustomEvent("emailIntegrationChanged", { detail: payload }));
+      window.dispatchEvent(
+        new CustomEvent("emailIntegrationChanged", { detail: payload })
+      );
     } catch {}
   };
 
   const handleDisconnectGmail = () => {
     if (!confirm("Disconnect Gmail?")) return;
-    const payload = { connected: false, email: null, lastSynced: null, autoSync: false };
+    const payload = {
+      connected: false,
+      email: null,
+      lastSynced: null,
+      autoSync: false,
+    };
     setGmailConnected(false);
     setGmailAddress("");
     persistEmailIntegration(payload);
@@ -95,9 +108,17 @@ export default function Settings() {
 
   const handleConnectGmail = () => {
     // simulated connect (in real app you'd do OAuth)
-    const entered = prompt("Enter Gmail address to simulate connect:", "alex.doe@gmail.com");
+    const entered = prompt(
+      "Enter Gmail address to simulate connect:",
+      "alex.doe@gmail.com"
+    );
     if (!entered) return;
-    const payload = { connected: true, email: entered, lastSynced: new Date().toISOString(), autoSync: false };
+    const payload = {
+      connected: true,
+      email: entered,
+      lastSynced: new Date().toISOString(),
+      autoSync: false,
+    };
     setGmailConnected(true);
     setGmailAddress(entered);
     persistEmailIntegration(payload);
@@ -276,18 +297,20 @@ export default function Settings() {
                           <p
                             className={`${gmailConnected ? "text-green-600 dark:text-green-400" : "text-text-light-secondary dark:text-dark-secondary"} text-sm`}
                           >
-                            {gmailConnected ? `Connected (${gmailAddress})` : "Not connected"}
+                            {gmailConnected
+                              ? `Connected (${gmailAddress})`
+                              : "Not connected"}
                           </p>
                         </div>
                       </div>
                     </div>
 
                     <div>
-                    {gmailConnected ? (
-  <button
-    type="button"
-    onClick={handleDisconnectGmail}
-    className="
+                      {gmailConnected ? (
+                        <button
+                          type="button"
+                          onClick={handleDisconnectGmail}
+                          className="
       px-5 h-12 rounded-lg 
       text-red-600 dark:text-red-400
       border border-red-600/50 dark:border-red-500/50
@@ -295,24 +318,23 @@ export default function Settings() {
       hover:bg-red-500/10 
       transition-colors text-sm font-medium
     "
-  >
-    Disconnect
-  </button>
-) : (
-  <button
-    type="button"
-    onClick={handleConnectGmail}
-    className="
+                        >
+                          Disconnect
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={handleConnectGmail}
+                          className="
       px-5 h-12 rounded-lg 
       bg-primary text-white 
       hover:bg-primary/90 
       transition-colors text-sm font-medium
     "
-  >
-    Connect Gmail
-  </button>
-)}
-
+                        >
+                          Connect Gmail
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -323,7 +345,9 @@ export default function Settings() {
                     onClick={() => navigate("/settings/email")}
                     className="flex items-center justify-center gap-2 px-5 h-12 rounded-lg bg-primary text-white hover:bg-primary/90 transition-colors text-sm font-medium"
                   >
-                    <span className="material-symbols-outlined text-lg">email</span>
+                    <span className="material-symbols-outlined text-lg">
+                      email
+                    </span>
                     Open Email Integration
                   </button>
                 </div>

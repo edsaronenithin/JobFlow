@@ -1,12 +1,11 @@
 // src/pages/Applications.jsx
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import ApplicationModal from "../components/ApplicationModal";
 
 const STORAGE_KEY = "jobflow_applications";
 
-// fallback sample data (used only if localStorage empty)
 const sampleApplications = [
   { uniqueNo: 1, jobTitle: "Senior Product Designer", company: "Innovate Inc.", platform: "LinkedIn", appliedDate: "Oct 26, 2023", status: "Applied", notes: "", resume: "Designer_Resume.pdf", location: "Remote", salary: "$120k" },
   { uniqueNo: 2, jobTitle: "Full-Stack Engineer", company: "Tech Solutions", platform: "Company Website", appliedDate: "Oct 24, 2023", status: "Applied", notes: "", resume: "Fullstack_Resume.pdf", location: "", salary: "" },
@@ -41,6 +40,22 @@ export default function Applications() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
 
+  // FILTERS (moved into a panel)
+  const [search, setSearch] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("All");
+  const [selectedPlatform, setSelectedPlatform] = useState("All");
+
+  // filter panel state
+  const [panelOpen, setPanelOpen] = useState(false);
+  const panelRef = useRef(null);
+  const filterButtonRef = useRef(null);
+
+  // keep storage in sync & broadcast
+  useEffect(() => {
+    writeToStorage(applications);
+  }, [applications]);
+
+  // listen for external updates (other pages / tabs)
   useEffect(() => {
     const onAppsUpdated = (e) => {
       if (e?.detail?.applications) setApplications(e.detail.applications);
@@ -67,21 +82,53 @@ export default function Applications() {
     };
   }, []);
 
-  // Persist local changes back to storage & notify
+  // Close panel on outside click or Esc
   useEffect(() => {
-    writeToStorage(applications);
+    function handleClickOutside(e) {
+      if (!panelOpen) return;
+      if (panelRef.current && !panelRef.current.contains(e.target) && !filterButtonRef.current.contains(e.target)) {
+        setPanelOpen(false);
+      }
+    }
+    function handleEsc(e) {
+      if (e.key === "Escape") setPanelOpen(false);
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEsc);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEsc);
+    };
+  }, [panelOpen]);
 
+  // gather platforms for filter dropdown
+  const platformOptions = useMemo(() => {
+    const set = new Set(applications.map((a) => (a.platform || "Unknown").trim()));
+    return ["All", ...Array.from(set)];
   }, [applications]);
 
+  // compute filtered results and group by status
   const groups = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    const matches = (a) => {
+      if (q) {
+        const matchText = `${a.jobTitle} ${a.company} ${a.notes || ""}`.toLowerCase();
+        if (!matchText.includes(q)) return false;
+      }
+      if (selectedStatus !== "All" && (a.status || "Applied") !== selectedStatus) return false;
+      if (selectedPlatform !== "All" && ((a.platform || "").trim() || "Unknown") !== selectedPlatform) return false;
+      return true;
+    };
+
     const byStatus = { Applied: [], Shortlisted: [], Interview: [], Offered: [], Rejected: [] };
     applications.forEach((a) => {
+      if (!matches(a)) return;
       const key = a.status ?? "Applied";
       if (byStatus[key]) byStatus[key].push(a);
       else byStatus.Applied.push(a);
     });
     return byStatus;
-  }, [applications]);
+  }, [applications, search, selectedStatus, selectedPlatform]);
 
   const handleAdd = () => {
     setEditingItem(null);
@@ -95,18 +142,40 @@ export default function Applications() {
 
   const handleDelete = (item) => {
     if (!confirm("Delete this application?")) return;
-    setApplications((prev) => prev.filter((p) => p.uniqueNo !== item.uniqueNo));
+    setApplications((prev) => {
+      const next = prev.filter((p) => p.uniqueNo !== item.uniqueNo);
+      window.dispatchEvent(new CustomEvent("applicationsUpdated", { detail: { applications: next } }));
+      return next;
+    });
   };
 
   const handleSave = (payload) => {
     if (payload.uniqueNo) {
-      setApplications((prev) => prev.map((p) => (p.uniqueNo === payload.uniqueNo ? { ...p, ...payload } : p)));
+      setApplications((prev) => {
+        const next = prev.map((p) => (p.uniqueNo === payload.uniqueNo ? { ...p, ...payload } : p));
+        window.dispatchEvent(new CustomEvent("applicationsUpdated", { detail: { applications: next } }));
+        return next;
+      });
     } else {
-      const nextId = Math.max(0, ...applications.map((a) => a.uniqueNo || 0)) + 1;
-      setApplications((prev) => [...prev, { ...payload, uniqueNo: nextId }]);
+      setApplications((prev) => {
+        const nextId = Math.max(0, ...prev.map((a) => a.uniqueNo || 0)) + 1;
+        const next = [...prev, { ...payload, uniqueNo: nextId }];
+        window.dispatchEvent(new CustomEvent("applicationsUpdated", { detail: { applications: next } }));
+        return next;
+      });
     }
     setModalOpen(false);
     setEditingItem(null);
+  };
+
+  const resetFilters = () => {
+    setSearch("");
+    setSelectedStatus("All");
+    setSelectedPlatform("All");
+  };
+
+  const applyAndClose = () => {
+    setPanelOpen(false);
   };
 
   const Card = ({ item }) => (
@@ -136,10 +205,10 @@ export default function Applications() {
       <div className="mt-3 flex items-center justify-between">
         <div className="text-xs text-slate-400">{item.appliedDate}</div>
         <div className="flex items-center gap-2">
-          <button onClick={() => handleEdit(item)} className="text-slate-500 hover:text-slate-700">
+          <button onClick={() => handleEdit(item)} className="text-slate-500 hover:text-slate-700" title="Edit">
             <span className="material-symbols-outlined">edit</span>
           </button>
-          <button onClick={() => handleDelete(item)} className="text-slate-500 hover:text-red-500">
+          <button onClick={() => handleDelete(item)} className="text-slate-500 hover:text-red-500" title="Delete">
             <span className="material-symbols-outlined">delete</span>
           </button>
         </div>
@@ -159,21 +228,97 @@ export default function Applications() {
             <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
               <div className="flex items-center gap-4">
                 <h1 className="text-slate-900 text-2xl font-bold">Applications</h1>
-
-                <div className="relative w-full max-w-xs">
-                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                    <span className="material-symbols-outlined text-slate-400 text-xl">search</span>
-                  </div>
-                  <input className="block w-full rounded-lg border border-slate-200 bg-white pl-10 pr-4 py-2 text-sm text-slate-900 focus:border-primary focus:ring-primary" placeholder="Search..." type="text" />
-                </div>
               </div>
 
-              <div className="flex items-center gap-3">
-                <button className="flex h-9 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600">
-                  <span className="material-symbols-outlined text-lg">tune</span>
-                  <span>Filters</span>
-                </button>
+              <div className="flex items-center gap-3 relative">
+                {/* Filters button (opens panel) */}
+                <div className="relative">
+                  <button
+                    ref={filterButtonRef}
+                    onClick={() => setPanelOpen((s) => !s)}
+                    className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600"
+                    aria-expanded={panelOpen}
+                    aria-controls="applications-filter-panel"
+                  >
+                    <span className="material-symbols-outlined text-lg">tune</span>
+                    Filters
+                  </button>
 
+                  {/* Panel */}
+                  {panelOpen && (
+                    <div
+                      id="applications-filter-panel"
+                      ref={panelRef}
+                      role="dialog"
+                      aria-modal="false"
+                      className="absolute right-0 z-40 mt-2 w-[360px] rounded-lg border border-slate-200 bg-white shadow-lg p-4"
+                    >
+                      <div className="flex flex-col gap-3">
+                        <label className="flex flex-col">
+                          <span className="text-sm text-slate-700 font-medium">Search</span>
+                          <input
+                            autoFocus
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            placeholder="Search job title, company..."
+                            className="mt-1 block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:ring-primary focus:border-primary"
+                          />
+                        </label>
+
+                        <label className="flex flex-col">
+                          <span className="text-sm text-slate-700 font-medium">Status</span>
+                          <select
+                            value={selectedStatus}
+                            onChange={(e) => setSelectedStatus(e.target.value)}
+                            className="mt-1 block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                          >
+                            <option>All</option>
+                            <option>Applied</option>
+                            <option>Shortlisted</option>
+                            <option>Interview</option>
+                            <option>Offered</option>
+                            <option>Rejected</option>
+                          </select>
+                        </label>
+
+                        <label className="flex flex-col">
+                          <span className="text-sm text-slate-700 font-medium">Platform</span>
+                          <select
+                            value={selectedPlatform}
+                            onChange={(e) => setSelectedPlatform(e.target.value)}
+                            className="mt-1 block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                          >
+                            {platformOptions.map((p) => (
+                              <option key={p} value={p}>{p}</option>
+                            ))}
+                          </select>
+                        </label>
+
+                        <div className="flex items-center justify-between gap-2 pt-2">
+                          <button
+                            type="button"
+                            onClick={() => { resetFilters(); setPanelOpen(false); }}
+                            className="px-3 py-2 rounded-lg text-sm border border-slate-200 bg-white"
+                          >
+                            Reset
+                          </button>
+
+                          <div className="flex gap-2">
+                            <button
+                              type="button"
+                              onClick={() => { applyAndClose(); }}
+                              className="px-3 py-2 rounded-lg bg-primary text-white text-sm"
+                            >
+                              Apply
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Add button */}
                 <button onClick={handleAdd} className="flex min-w-[84px] items-center justify-center rounded-lg h-10 px-4 bg-[#2b8cee] text-white text-sm font-bold">
                   <span className="material-symbols-outlined mr-2 text-lg">add</span>
                   <span className="truncate">Add Application</span>
@@ -181,9 +326,8 @@ export default function Applications() {
               </div>
             </div>
 
-            {/* Responsive grid, prevents horizontal scrolling */}
+            {/* Kanban-like columns */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-              {/* Applied */}
               <div className="flex flex-col rounded-xl bg-[#f1f2f4] p-3">
                 <div className="flex items-center justify-between mb-4 px-1">
                   <div className="flex items-center gap-2">
@@ -197,7 +341,6 @@ export default function Applications() {
                 </div>
               </div>
 
-              {/* Shortlisted */}
               <div className="flex flex-col rounded-xl bg-[#f1f2f4] p-3">
                 <div className="flex items-center justify-between mb-4 px-1">
                   <div className="flex items-center gap-2">
@@ -211,7 +354,6 @@ export default function Applications() {
                 </div>
               </div>
 
-              {/* Interview */}
               <div className="flex flex-col rounded-xl bg-[#f1f2f4] p-3">
                 <div className="flex items-center justify-between mb-4 px-1">
                   <div className="flex items-center gap-2">
@@ -225,7 +367,6 @@ export default function Applications() {
                 </div>
               </div>
 
-              {/* Offered */}
               <div className="flex flex-col rounded-xl bg-[#f1f2f4] p-3">
                 <div className="flex items-center justify-between mb-4 px-1">
                   <div className="flex items-center gap-2">
@@ -239,7 +380,6 @@ export default function Applications() {
                 </div>
               </div>
 
-              {/* Rejected */}
               <div className="flex flex-col rounded-xl bg-[#f1f2f4] p-3">
                 <div className="flex items-center justify-between mb-4 px-1">
                   <div className="flex items-center gap-2">
@@ -257,7 +397,12 @@ export default function Applications() {
         </main>
       </div>
 
-      <ApplicationModal open={modalOpen} initialData={editingItem} onClose={() => { setModalOpen(false); setEditingItem(null); }} onSave={handleSave} />
+      <ApplicationModal
+        open={modalOpen}
+        initialData={editingItem}
+        onClose={() => { setModalOpen(false); setEditingItem(null); }}
+        onSave={handleSave}
+      />
     </div>
   );
 }
