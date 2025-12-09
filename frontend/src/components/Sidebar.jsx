@@ -11,8 +11,14 @@ const Sidebar = () => {
     navigate("/login", { replace: true });
   };
 
-  const activeClass = "flex items-center gap-3 px-3 py-2 rounded-lg bg-primary/10 text-primary dark:bg-primary/20";
-  const inactiveClass = "flex items-center gap-3 px-3 py-2 text-[#8A94A6] hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg";
+  const activeClass =
+    "flex items-center gap-3 px-3 py-2 rounded-lg bg-primary/10 text-primary dark:bg-primary/20";
+  const inactiveClass =
+    "flex items-center gap-3 px-3 py-2 text-[#8A94A6] hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg";
+
+  // helper to avoid repeating child color classes so children inherit from the container
+  const iconClass = "material-symbols-outlined";
+  const labelClass = "text-sm font-medium";
 
   return (
     <aside className="w-64 flex-shrink-0 bg-white dark:bg-[#192734] p-4 flex flex-col justify-between border-r border-slate-200 dark:border-slate-800 fixed top-0 left-0 h-full">
@@ -33,28 +39,28 @@ const Sidebar = () => {
 
         <nav className="flex flex-col gap-2">
           <NavLink end to="/dashboard" className={({ isActive }) => (isActive ? activeClass : inactiveClass)}>
-            <span className="material-symbols-outlined fill text-gray-600 dark:text-gray-300">dashboard</span>
-            <p className="text-sm font-medium">Dashboard</p>
+            <span className={iconClass}>dashboard</span>
+            <p className={labelClass}>Dashboard</p>
           </NavLink>
 
           <NavLink to="/applications" className={({ isActive }) => (isActive ? activeClass : inactiveClass)}>
-            <span className="material-symbols-outlined">view_kanban</span>
-            <p className="text-sm font-medium">Applications</p>
+            <span className={iconClass}>view_kanban</span>
+            <p className={labelClass}>Applications</p>
           </NavLink>
 
           <NavLink to="/resumes" className={({ isActive }) => (isActive ? activeClass : inactiveClass)}>
-            <span className="material-symbols-outlined">description</span>
-            <p className="text-sm font-medium">Resumes</p>
+            <span className={iconClass}>description</span>
+            <p className={labelClass}>Resumes</p>
           </NavLink>
 
           <NavLink to="/analytics" className={({ isActive }) => (isActive ? activeClass : inactiveClass)}>
-            <span className="material-symbols-outlined">bar_chart</span>
-            <p className="text-sm font-medium">Analytics</p>
+            <span className={iconClass}>bar_chart</span>
+            <p className={labelClass}>Analytics</p>
           </NavLink>
 
           <NavLink to="/settings" className={({ isActive }) => (isActive ? activeClass : inactiveClass)}>
-            <span className="material-symbols-outlined">settings</span>
-            <p className="text-sm font-medium">Settings</p>
+            <span className={iconClass}>settings</span>
+            <p className={labelClass}>Settings</p>
           </NavLink>
         </nav>
       </div>
@@ -62,10 +68,12 @@ const Sidebar = () => {
       <div className="flex flex-col gap-1">
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3 px-3 py-2 text-[#8A94A6] hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg w-full text-left"
+          className={
+            "flex items-center gap-3 px-3 py-2 text-[#8A94A6] hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg w-full text-left"
+          }
         >
-          <span className="material-symbols-outlined">logout</span>
-          <p className="text-sm font-medium">Logout</p>
+          <span className={iconClass}>logout</span>
+          <p className={labelClass}>Logout</p>
         </button>
       </div>
     </aside>

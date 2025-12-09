@@ -6,6 +6,7 @@ import Dashboard from "./pages/Dashboard";
 import ApplicationDetails from "./pages/ApplicationDetails";
 import Applications from "./pages/Applications";
 import Analytics from "./pages/Analytics";
+import Settings from "./pages/Settings";
 import "./fontawesome";
 import { RequireAuth, RedirectIfAuth } from "./components/RouteGuards";
 
@@ -49,6 +50,15 @@ function App() {
     </RequireAuth>
   }
 />
+<Route
+  path="/settings"
+  element={
+    <RequireAuth>
+      <Settings />
+    </RequireAuth>
+  }
+/>
+
       {/* Auth pages — redirect away if already logged in */}
       <Route
         path="/login"
