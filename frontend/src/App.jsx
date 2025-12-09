@@ -8,6 +8,7 @@ import Applications from "./pages/Applications";
 import Analytics from "./pages/Analytics";
 import Settings from "./pages/Settings";
 import EmailIntegration from "./pages/EmailIntegration";
+import Resumes from "./pages/Resumes";
 import "./fontawesome";
 import { RequireAuth, RedirectIfAuth } from "./components/RouteGuards";
 
@@ -51,6 +52,14 @@ function App() {
     </RequireAuth>
   }
 />
+
+     <Route
+       path="/resumes"
+       element={
+         <RequireAuth>
+           <Resumes />
+         </RequireAuth>
+       } />
 <Route
   path="/settings"
   element={
