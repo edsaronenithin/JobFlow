@@ -70,7 +70,7 @@ export default function Applications() {
   // Persist local changes back to storage & notify
   useEffect(() => {
     writeToStorage(applications);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, [applications]);
 
   const groups = useMemo(() => {
