@@ -11,11 +11,46 @@ const STORAGE_KEY = "jobflow_applications";
 
 // sample data (used only when localStorage empty)
 const userApplicationDetails = [
-  { uniqueNo: 1, company: "TATA", jobTitle: "Software Engineer", status: "Applied", platform: "LinkedIn", appliedDate: "11/01/12" },
-  { uniqueNo: 2, company: "UST Global", jobTitle: "Fullstack Developer", status: "Shortlisted", platform: "Company Website", appliedDate: "21/11/12" },
-  { uniqueNo: 3, company: "Infosys", jobTitle: "Web Developer", status: "Offered", platform: "LinkedIn", appliedDate: "11/01/12" },
-  { uniqueNo: 4, company: "TATA", jobTitle: "Software Engineer", status: "Interview", platform: "LinkedIn", appliedDate: "11/01/12" },
-  { uniqueNo: 5, company: "TATA", jobTitle: "Software Engineer", status: "Rejected", platform: "LinkedIn", appliedDate: "11/01/12" },
+  {
+    uniqueNo: 1,
+    company: "TATA",
+    jobTitle: "Software Engineer",
+    status: "Applied",
+    platform: "LinkedIn",
+    appliedDate: "11/01/12",
+  },
+  {
+    uniqueNo: 2,
+    company: "UST Global",
+    jobTitle: "Fullstack Developer",
+    status: "Shortlisted",
+    platform: "Company Website",
+    appliedDate: "21/11/12",
+  },
+  {
+    uniqueNo: 3,
+    company: "Infosys",
+    jobTitle: "Web Developer",
+    status: "Offered",
+    platform: "LinkedIn",
+    appliedDate: "11/01/12",
+  },
+  {
+    uniqueNo: 4,
+    company: "TATA",
+    jobTitle: "Software Engineer",
+    status: "Interview",
+    platform: "LinkedIn",
+    appliedDate: "11/01/12",
+  },
+  {
+    uniqueNo: 5,
+    company: "TATA",
+    jobTitle: "Software Engineer",
+    status: "Rejected",
+    platform: "LinkedIn",
+    appliedDate: "11/01/12",
+  },
 ];
 
 function readFromStorage() {
@@ -30,7 +65,9 @@ function readFromStorage() {
 
 export default function Dashboard() {
   const stored = readFromStorage();
-  const [applicationDetails, setApplicationDetails] = useState(stored ?? userApplicationDetails);
+  const [applicationDetails, setApplicationDetails] = useState(
+    stored ?? userApplicationDetails
+  );
 
   // modal state
   const [modalOpen, setModalOpen] = useState(false);
@@ -83,7 +120,13 @@ export default function Dashboard() {
 
   // compute counts (unfiltered)
   const applicationState = useMemo(() => {
-    const counts = { Applied: 0, Shortlisted: 0, Interview: 0, Offered: 0, Rejected: 0 };
+    const counts = {
+      Applied: 0,
+      Shortlisted: 0,
+      Interview: 0,
+      Offered: 0,
+      Rejected: 0,
+    };
     applicationDetails.forEach((a) => {
       if (counts[a.status] !== undefined) counts[a.status] += 1;
     });
@@ -110,17 +153,25 @@ export default function Dashboard() {
     const q = (searchText || "").trim().toLowerCase();
     return applicationDetails.filter((a) => {
       if (statusFilter !== "All" && a.status !== statusFilter) return false;
-      if (platformFilter !== "All" && a.platform !== platformFilter) return false;
+      if (platformFilter !== "All" && a.platform !== platformFilter)
+        return false;
       if (!q) return true;
       // search in company, jobTitle, platform, notes
-      const hay = `${a.company || ""} ${a.jobTitle || ""} ${a.platform || ""} ${a.notes || ""}`.toLowerCase();
+      const hay =
+        `${a.company || ""} ${a.jobTitle || ""} ${a.platform || ""} ${a.notes || ""}`.toLowerCase();
       return hay.includes(q);
     });
   }, [applicationDetails, searchText, statusFilter, platformFilter]);
 
   // If you prefer status cards reflect filtered result counts, compute separate counts:
   const applicationStateFiltered = useMemo(() => {
-    const counts = { Applied: 0, Shortlisted: 0, Interview: 0, Offered: 0, Rejected: 0 };
+    const counts = {
+      Applied: 0,
+      Shortlisted: 0,
+      Interview: 0,
+      Offered: 0,
+      Rejected: 0,
+    };
     filteredApplications.forEach((a) => {
       if (counts[a.status] !== undefined) counts[a.status] += 1;
     });
@@ -146,24 +197,37 @@ export default function Dashboard() {
   };
 
   const handleDelete = (item) => {
-    const updated = applicationDetails.filter((a) => a.uniqueNo !== item.uniqueNo);
+    const updated = applicationDetails.filter(
+      (a) => a.uniqueNo !== item.uniqueNo
+    );
     setApplicationDetails(updated);
     // broadcast the change for other pages/components
-    window.dispatchEvent(new CustomEvent("applicationsUpdated", { detail: { applications: updated } }));
+    window.dispatchEvent(
+      new CustomEvent("applicationsUpdated", {
+        detail: { applications: updated },
+      })
+    );
   };
 
   // save (add or update)
   const handleSaveApplication = (updated) => {
     let newList;
     if (updated.uniqueNo) {
-      newList = applicationDetails.map((p) => (p.uniqueNo === updated.uniqueNo ? { ...p, ...updated } : p));
+      newList = applicationDetails.map((p) =>
+        p.uniqueNo === updated.uniqueNo ? { ...p, ...updated } : p
+      );
     } else {
-      const nextId = Math.max(0, ...applicationDetails.map((a) => a.uniqueNo || 0)) + 1;
+      const nextId =
+        Math.max(0, ...applicationDetails.map((a) => a.uniqueNo || 0)) + 1;
       newList = [...applicationDetails, { ...updated, uniqueNo: nextId }];
     }
     setApplicationDetails(newList);
     // notify other pages
-    window.dispatchEvent(new CustomEvent("applicationsUpdated", { detail: { applications: newList } }));
+    window.dispatchEvent(
+      new CustomEvent("applicationsUpdated", {
+        detail: { applications: newList },
+      })
+    );
     setModalOpen(false);
     setEditingApplication(null);
   };
@@ -205,7 +269,11 @@ export default function Dashboard() {
               {/* KPI cards — show filtered counts so user sees effect of filters */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
                 {applicationStateFiltered.map((item) => (
-                  <StatusCard key={item.label} label={item.label} value={item.value} />
+                  <StatusCard
+                    key={item.label}
+                    label={item.label}
+                    value={item.value}
+                  />
                 ))}
               </div>
 
@@ -215,7 +283,9 @@ export default function Dashboard() {
                   {/* Search */}
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                      <span className="material-symbols-outlined text-[#8A94A6]">search</span>
+                      <span className="material-symbols-outlined text-[#8A94A6]">
+                        search
+                      </span>
                     </div>
                     <input
                       value={searchText}
@@ -242,7 +312,9 @@ export default function Dashboard() {
                       <div className="absolute left-0 mt-2 w-80 z-50 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 shadow-lg">
                         <div className="flex flex-col gap-3">
                           <label className="flex flex-col text-sm">
-                            <span className="text-slate-900 dark:text-white text-xs font-medium">Status</span>
+                            <span className="text-slate-900 dark:text-white text-xs font-medium">
+                              Status
+                            </span>
                             <select
                               value={statusFilter}
                               onChange={(e) => setStatusFilter(e.target.value)}
@@ -258,14 +330,20 @@ export default function Dashboard() {
                           </label>
 
                           <label className="flex flex-col text-sm">
-                            <span className="text-slate-900 dark:text-white text-xs font-medium">Platform</span>
+                            <span className="text-slate-900 dark:text-white text-xs font-medium">
+                              Platform
+                            </span>
                             <select
                               value={platformFilter}
-                              onChange={(e) => setPlatformFilter(e.target.value)}
+                              onChange={(e) =>
+                                setPlatformFilter(e.target.value)
+                              }
                               className="mt-1 block w-full rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-200 px-3 py-2"
                             >
                               {platformOptions.map((p) => (
-                                <option key={p} value={p}>{p}</option>
+                                <option key={p} value={p}>
+                                  {p}
+                                </option>
                               ))}
                             </select>
                           </label>
@@ -312,7 +390,9 @@ export default function Dashboard() {
                     className="flex h-10 items-center justify-center gap-2 rounded-lg bg-[#2b8cee] hover:bg-[#1f6fcc] text-white text-sm font-bold px-4 transition-all"
                     title="Add Application"
                   >
-                    <span className="material-symbols-outlined text-lg">add</span>
+                    <span className="material-symbols-outlined text-lg">
+                      add
+                    </span>
                     Add Application
                   </button>
                 </div>
@@ -331,7 +411,12 @@ export default function Dashboard() {
         </main>
       </div>
 
-      <ApplicationModal open={modalOpen} initialData={editingApplication} onClose={handleCloseModal} onSave={handleSaveApplication} />
+      <ApplicationModal
+        open={modalOpen}
+        initialData={editingApplication}
+        onClose={handleCloseModal}
+        onSave={handleSaveApplication}
+      />
     </div>
   );
 }

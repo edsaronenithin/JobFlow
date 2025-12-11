@@ -45,37 +45,38 @@ function App() {
         }
       />
       <Route
-  path="/analytics"
-  element={
-    <RequireAuth>
-      <Analytics />
-    </RequireAuth>
-  }
-/>
+        path="/analytics"
+        element={
+          <RequireAuth>
+            <Analytics />
+          </RequireAuth>
+        }
+      />
 
-     <Route
-       path="/resumes"
-       element={
-         <RequireAuth>
-           <Resumes />
-         </RequireAuth>
-       } />
-<Route
-  path="/settings"
-  element={
-    <RequireAuth>
-      <Settings />
-    </RequireAuth>
-  }
-/>
-<Route
-  path="/settings/email"
-  element={
-    <RequireAuth>
-      <EmailIntegration />
-    </RequireAuth>
-  }
-/>
+      <Route
+        path="/resumes"
+        element={
+          <RequireAuth>
+            <Resumes />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/settings"
+        element={
+          <RequireAuth>
+            <Settings />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/settings/email"
+        element={
+          <RequireAuth>
+            <EmailIntegration />
+          </RequireAuth>
+        }
+      />
 
       {/* Auth pages — redirect away if already logged in */}
       <Route

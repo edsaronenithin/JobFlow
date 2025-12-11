@@ -10,7 +10,8 @@ import { isAuthenticated } from "../auth";
  */
 export function RequireAuth({ children }) {
   const location = useLocation();
-  if (!isAuthenticated()) {
+
+  if (isAuthenticated()) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
   return children;
